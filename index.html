@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="" lang=""><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="Julian Fuhrer">
+  <title>Modelling Temporal Prediction Mechanisms through Dynamical Systems</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+
+<style type="text/css">
+body {
+margin: 1em auto;
+max-width: 35em;
+padding: 1vw 4vw;
+font: 1.2em/1.62 Microsoft Sans Serif;
+hyphens: auto;
+/* text-align: justify; */
+background: White;
+}
+
+a:link {
+  color: #4682B4;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: red;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:active {
+  color: yellow;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:visited {
+color: Black;
+}
+html {
+background: White;
+}
+h1,h2,h3 {
+line-height: 1.2;
+}
+blockquote {
+padding: .1em .62em;
+padding-top: 0em;
+padding-bottom: 0em;
+margin: .5em;
+border-left: .3em solid Lightgray;
+}
+pre.sourceCode {
+padding: .3em .6em;
+}
+@media print {
+body {
+max-width: none;
+}
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  /* width: 50%; */
+  max-width: 100%;
+  height: auto;
+}
+<style>
+  * {
+      margin: 0;
+      padding: 0;
+  }
+  .imgbox {
+      display: grid;
+      height: 100%;
+  }
+  .center-fit {
+      max-width: 90%;
+      max-height: 100vh;
+      margin: auto;
+  }
+
+.row {
+    display: flex;
+    height: 100%;
+  }
+
+  .column {
+    flex: 100%;
+    padding: 5px;
+    max-width: 90%;
+    max-height: 100vh;
+    margin: auto;
+  }
+
+  .container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+}
+.video {
+    position: absolute;
+    top: 0;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+}
+
+</style>
+
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { linebreaks: { automatic: true } },
+              SVG: { linebreaks: { automatic: true } }
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=default'></script>
+
+<link rel="icon" href="https://www.uio.no//vrtx/decorating/resources/dist/src2/images/favicon/favicon.svg">
+<link rel="shortcut icon" href="https://www.uio.no//vrtx/decorating/resources/dist/src2/images/favicon/favicon.svg">
+
+</head>
+
+<body>
+<header>
+  <h1 class="title">Modelling Temporal Prediction Mechanisms through Dynamical Systems</h1>
+  <p class="author"><a href="mailto:julianpf%5Bat%5Difi.uio.no">Julian Fuhrer</a></p>
+</header>
+  <h2 id="TOC_heading">Table of Contents</h2>
+<nav id="TOC">
+<ul>
+  <li><a href="#Neural Oscillation">Temporal Predictions & Neural Oscillations</a>
+    <ul>
+      <li><a href="#cortical-oscillations-and-sensory-predictions"><span>Cortical Oscillations and Sensory Predictions</span></a></li>
+      <li><a href="#neuronal-oscillations-as-a-mechanistic-substrate-of-auditory-temporal-prediction"><span>Neuronal Oscillations as a Mechanistic Substrate of Auditory Temporal Prediction</span></a></li>
+      <!-- <li><a href="#fitness-functions-in-evolutionary-robotics-a-survey-and-analysis"><span>Fitness functions in evolutionary robotics: A survey and analysis</span></a></li>
+      <li><a href="#from-motor-babbling-to-hierarchical-learning-by-imitation-a-robot-developmental-pathway"><span>From motor babbling to hierarchical learning by imitation: a robot developmental pathway</span></a></li> -->
+    </ul>
+  </li>
+  <li><a href="#modelling-through-dynamical-systems">Modelling through Dynamical Systems</a>
+    <ul>
+      <li><a href="#neural-networks-for-beat-perception-in-musical-rhythm"><span>Neural Networks for Beat Perception in Musical Rhythm</span></a></li>
+      <li><a href="#a-canonical-model-for-gradient-frequency-neural-networks"><span>A Canonical Model for Gradient Frequency Neural Networks</span></a></li>
+      <li><a href="#on-synchronizing-movements-to-music"><span>On Synchronizing Movements to Music</span></a></li>
+      <li><a href="#delayed-feedback"><span>Delayed feedback embedded in perception action
+ coordination cycles results in
+ anticipation behaviour during synchronised
+ rhythmic action: A dynamical systems
+ approach</span></a></li>
+      <li><a href="#Dyn_mod"><span>Dynamic models of large-scale brain activity</span></a></li>
+      <li><a href="#NetPyNE"><span>NetPyNE, a Tool for Data-Driven multi-scale Modeling of Brain Circuits</span></a></li>
+    </ul>
+  </li>
+  <!-- <li><a href="#neural-network-as-controllers">Neural Network as controllers</a>
+    <ul>
+      <li><a href="#a-distributed-neural-network-architecture-for-hexapod-robot-locomotion"><span>A Distributed Neural Network Architecture for Hexapod Robot Locomotion</span></a></li>
+    </ul>
+  </li> -->
+  <li><a href="#application-prediction-mechanisms">Transfer to Application</a>
+    <ul>
+      <li><a href="#swarmalators"><span>Oscillators that Sync and Swarm</span></a></li>
+      <li><a href="#fireflies"><span>Decentralized Harmonic synchronisation in Mobile Music Systems</span></a></li>
+      <!-- <li><a href="#evolving-coordinated-quadruped-gaits-with-the-hyperneat-generative-encoding"><span>Evolving Coordinated Quadruped Gaits with the HyperNEAT Generative Encoding</span></a></li>
+      <li><a href="#evolving-robot-gaits-in-hardware-the-hyperneat-generative-encoding-vs.-parameter-optimization"><span>Evolving Robot Gaits in Hardware: the HyperNEAT Generative Encoding Vs. Parameter Optimization</span></a></li>
+      <li><a href="#single-unit-pattern-generators-for-quadruped-locomotion"><span>Single-Unit Pattern Generators for Quadruped Locomotion</span></a></li> -->
+    </ul>
+  </li>
+</ul>
+</nav>
+<h2 id="Intro">Introduction</h2>
+<p>The purpose of this document is to cover a literature review for the "Special Syllabus" by Julian Fuhrer with the topic of oscillatory dynamics in the brain and its possible transfer to applications.</p>
+<p>Sensory processing in the brain is more and more regarded as an inference problem where anticipation or prediction of an event plays a key role. An event in general can be anticipated in terms of its features (content), location (space) or moment (time) of occurrence.</p>
+<p> This syllabus treats the temporal dimension by considering temporal prediction mechanisms of the brain and its modelling through dynamical systems. Concretely, prediction mechanisms underlying auditory perception are examined, with the focus being on modelling and simulating of such, based on cortical oscillations. Through presenting selected articles, first the topic of cortical oscillatory dynamics with a focus on its role in temporal predictions is outlined. Subsequently, its mathematical modelling through dynamical systems is treated and lastly its possible transfer to applications is considered.</p>
+<p> The structure of each article description will consist of a short summary, a couple of sentences, before a larger review summarising the main points and take-aways from the articles follows. There, I will also try to state which students could find purpose in reading the article at hand and how this choice of article connects the respective topic.</p>
+<blockquote>
+<p>Notice, all article headers, except the table-of-contents, should be a link to the article in question.</p>
+</blockquote>
+<hr>
+<h2 id="Neural Oscillation">Temporal Predictions & Neural Oscillations</h2>
+<p>The first topic regards neural oscillation and its role in temporal predictions. Hence, in this section more neuroscience inclined articles are presented. These articles aim for a connection between how the brain anticipates an event and neural oscillation. That is to say, how predictive timing is connected to different frequency bands of cortical oscillations.</p>
+<h3 id="cortical-oscillations-and-sensory-predictions"><a href="https://www.sciencedirect.com/science/article/abs/pii/S1364661312001210">Cortical Oscillations and Sensory Predictions</a></h3>
+<blockquote>
+<p>Theories of perception are anchored in the central notion that the brain continuously updates an internal model of the world to infer the probable causes of sensory events. In this framework, the brain not only needs to predict the causes of sensory input, but also when they are most likely to happen. We review [here] the neurophysiological bases of sensory predictions of ‘what' and ‘when', with an emphasis on low-level oscillatory mechanisms. We argue that neural rhythms offer distinct and adapted computational solutions to predicting ‘what' is going to happen in the sensory environment and ‘when'.</p>
+</blockquote>
+<h4 id="who-is-this-for">Who is this for?</h4>
+  <ul>
+    <li>Sholars who want to know more about stimuli processing in the brain, perception and its underlying prediction mechanisms</li>
+  </ul>
+<h4 id="short-summary">Short summary</h4>
+<ul>
+  <li>Thorough introduction and review to predictions of temporal and contentual nature</li>
+  <li>Giving some time to read, this well written review article provides an overview of several notions and concepts of perception as for instance attention and expectation</li>
+  <li>Providing a glossary and boxes to understand these concepts. Furthermore, also the role of the motor system in perceptual auditory task is illuminated (the motor system is going to play an important role in the next or modelling theme of this syllabus).</li>
+</ul>
+<h4 id="summary">Summary</h4>
+<p>This article treats theories of perception and its underlying mechanisms. Prediction is assumed to be a core principle of perception and thus the authors examine prediction mechanisms of "what" and subsequently of "when" something is going to happen. Here, different concepts of cognition are introduced and cortical or neural oscillation is regarded as a common basis for both the temporal and the contentual framework. By doing so, several illustrative examples of speech communication are demonstrated where also neural oscillation itself is introduced.</p>
+<p>Starting with a general introduction regarding cortical oscillations and sensory predictive mechanisms, predictive timing is reviewed in terms of different frequency bands. Here, principles such as phase reset or phase locking of low frequency oscillations are displayed. In the same manner, subsequently, predicting "what" is treated. Between this structure are boxes explaining different ideas such as top-down modulation by attention and expectation or active inference by motor systems in predictive timing. In last section, both considerations are combined into the oscillatory framework and made plausible by the example of speech processing.</p>
+<p>Overall the article is a highly recommended read. Any student interested in learning principles about perception and its mechanisms should read this article. It is rather compressed in its writing, but provided one spends time on it, it yields valuable information regarding possible mechanisms in the brain which facilitate not only temporal predictions, but also enable predicting what is going to happen. The most important is that the authors connect such predictions with neural oscillation and by doing so they find a common framework of both.</p>
+
+<h3 id="neuronal-oscillations-as-a-mechanistic-substrate-of-auditory-temporal-prediction"><a href="https://nyaspubs.onlinelibrary.wiley.com/doi/epdf/10.1111/nyas.12629">Neuronal Oscillations as a Mechanistic Substrate of Auditory Temporal Prediction</a></h3>
+<blockquote>
+<p>Neuronal oscillations are comprised of rhythmic fluctuations of excitability that are synchronised in ensembles of neurons and thus function as temporal filters that dynamically organise sensory processing. When perception relies on anticipatory mechanisms, ongoing oscillations also provide a neurophysiological substrate for temporal prediction. In this article, we review evidence for this account with a focus on auditory perception. We argue that such "oscillatory temporal predictions" can selectively amplify neuronal sensitivity to inputs that occur in a predicted, task-relevant rhythm and optimise temporal selection.</p>
+</blockquote>
+<h4 id="who-is-this-for-1">Who is this for?</h4>
+<ul>
+  <li>People that want to know more about role of neural oscillation in temporal perception</li>
+</ul>
+<h4 id="short-summary-1">Short summary</h4>
+<ul>
+  <li>Short and compact article with a good introduction that stays on a good-to-follow level</li>
+  <li>Refers to Dynamic Attention Theory</li>
+  <li>Focuses on temporal predictions in auditory perception</li>
+  <li>Addresses role of motor system in the origin of temporal predictions</li>
+  <li>Hypothesises how predictions of different dimensions can possibly interact or are dependent on each other</li>
+</ul>
+
+<h4 id="summary-1">Summary</h4>
+<p>
+Despite its rather short length, this publication treats a variety of aspects of temporal predictions and states that low-frequency neuronal oscillations are the hypothesised substrate of temporal predictions. Especially interesting, the authors treat the role of motor systems in perceptual tasks and highlight the speciality of the auditory modality as humans are not able to selectively move their ears as opposed to most sensory modalities.
+<p>
+After a compact introduction to perception and its thought underlying prediction mechanism, the authors address temporal prediction in the example of speech processing as "together with music, [it] is arguably the most interesting stimulus to study the role of neuronal oscillations in perception. [It] arises from the dynamic sampling of acoustic information at multiple time scales simultaneously, referred to as multiplexing." Here, they put forward how different frequency bands take part in processing different aspects at different time scales. Subsequently, the motor origin of temporal predictions is treated. Here they argue that the motor system may be conceptualised as a purely predictive system, generating top-down predictions that shape perception and that it may drive temporal expectations through slow oscillatory dynamics. Then, they treat the term of active sensing which is the involvement of sensorimotor loops in perception or how perception is shaped by the motor system and its possible existence in the auditory domain. In general, the motor system first structures the content of bottom-up sensory information inflow as it directs sensing organs toward relevant stimuli. Second, it is stated that the motor system modulates the processing of sensory information via sending copies of movement commands to associated sensory structures (top-down discharge signals). This predictively modulates sensory processing according to the temporal (and spatial) patterns of motor activity patterns, thus providing "when" (and "where") predictions at a minimum. The authors proceed then to comment on active sensing in the auditory domain and its relative bottom-up disconnection from the motor system. As opposed to the fact that "bottom-up and top-down motor influences begin contingent in most sensory modalities, audition is the exception because we cannot selectively move our ears. However, sensitivity to temporal information is at its best in the auditory modality, and music exemplifies the strong relationship existing between rhythm and auditory and motor systems." Before the final section, the authors rather quickly present the design and conduction of an experiment aiming to examine auditory active sensing further with the result that
+  <ul>
+    <li>producing a rhythmic movement engages a top-down modulation that sharpens the temporal selection of auditory information,</li>
+    <li>it improves the segregation between relevant and distracting information, facilitating perception of relevant items and suppressing perception of irrelevant ones, and</li>
+    <li>results suggest that motor-driven temporal predictions optimise perception, and a most likely substrate for this effect is a slow oscillation timed by rhythmic motor activity.</li>
+  </ul>
+Finally, they put forward the danger of only focusing on one dimension because the other dimensions (e.g. feature or spatial dimension) become highly predictable, likely biasing results. Indeed, they argue how complementary predictions interact synergistically according to a dominance hierarchy with each other. For instance in case of the visual system, spatial predictions (spectral in the auditory system) are needed as solely temporal predictions might not be able to efficiently modulate first stages of visual processing. Thus, they might be a part of a spatiotemporal predictive filter, shaping perception in the form of a multidimensional filter mechanism.
+</p>
+<p>
+This article is highly recommended to read as it treats various different concepts of temporal prediction and displays how essential rhythmic oscillations are for this process. For a reader not that familiar with signal processing in the brain, it can get difficult at some paragraphs to understand precisely what is meant. Yet, the authors put forward numerous examples making it possible to follow up. The section where the authors present their experiment is rather short, the same with conclusion and summary as if necessary space was not available.
+</p>
+
+<h2 id="modelling-through-dynamical-systems">Modelling through Dynamical Systems</h2>
+<p>So far articles have been presented treating prediction mechanisms and the role of neural oscillations and the motor system. In this section modelling and simulation of such are considered. Here, a focus is on the research of <a href="https://musicdynamicslab.uconn.edu/home/dr-edward-large/">Edward W. Large</a> and his Music Dynamics Laboratory which postulates a model called gradient frequency neural network.
+
+
+<h3 id="neural-networks-for-beat-perception-in-musical-rhythm"><a href="https://www.frontiersin.org/articles/10.3389/fnsys.2015.00159/full">Neural Networks for Beat Perception in Musical Rhythm</a></h3>
+<blockquote>
+<p>In this paper, we summarise current knowledge about the synchronisation of neural rhythms to musical rhythms and outline a neurodynamic model of pulse perception based on entrainment of neural oscillation. First, in §2, we present a brief overview of the main theories and experimental findings related to musical pulse and meter. We discuss the potential function of neural oscillations in establishing the perceived temporal structure of complex musical rhythms. In §3, we sketch a neurodynamic model of pulse perception based on the interaction between oscillatory neural networks. The model incorporates the basic findings of the past 20 or so years and makes a key prediction about the formation of the pulse percept. In §4, we evaluate the fundamental prediction of the theory, that perceived temporal structures may correspond to frequencies that are not physically present in the amplitude envelope. This model provides a theoretical link between oscillatory neurodynamics and the induction of pulse and meter in musical rhythm.</p>
+</blockquote>
+<h4 id="who-is-this-for-6">Who is this for?</h4>
+<ul>
+  <li>Students that want to get an idea of how gradient frequency networks work and what they are based on</li>
+  <li>Students looking for a connection between cortical oscillatory dynamics and perception of musical rhythm</li>
+</ul>
+<h4 id="short-summary-6">Short summary</h4>
+<ul>
+  <li>Comprehensive article</li>
+  <li>Offers music theoretical basics</li>
+  <li>Demonstrates and applies the model</li>
+  <li>Model available <a href="https://github.com/MusicDynamicsLab/GrFNNRhythm">here</a></li>
+</ul>
+<h4 id="summary-6">Summary</h4>
+<p>This article displays knowledge from different research areas which is then incorporated into a simulation model. First, music theoretical basics are demonstrated. Based on the Neural Resonance Theory and findings about the synchronisation of neural rhythm to musical rhythm, these basics are subsequently conflated with neural oscillatory dynamics. Here, as <a href="#neuronal-oscillations-as-a-mechanistic-substrate-of-auditory-temporal-prediction">articles</a>, also the role of the motor system in auditory perception is addressed. The authors highlight neural entrainment to the musical rhythm and how broadly distributed motor systems are involved in pulse and metre perception, enabling coordination of perception and rhythmic movements with musical rhythms. After quickly introducing their canonical gradient frequency neural oscillator network, this model is employed for simulating auditory-motor coupling within the brain. The model can capture interacting oscillatory dynamics in sensory and motor networks, where a rhythm is input to a sensory network, and sensory and motor networks are reciprocally connected, providing input to one another. The sensory network is intended to capture auditory cortical entrainment, while the motor network is intended to capture the dynamics of a broadly distributed network including basal ganglia and cortical areas. The setup can be seen in following video from <a href="https://oscilloscape.com/">Oscilloscape™</a>.
+  <video width="700" autoplay="" muted="" loop="" id="myVideo" class="center"> <source src="./dat/comp4p1-trainWhite-desktop.m4v" type="video/mp4"></video>
+The fundamental prediction of this model setup is that pulse is perceived in rhythms with no energy in the amplitude envelope of the acoustic rhythm at the pulse frequency. To further examine this prediction, the authors performed then a tapping study, where the result shows that participants perceive the pulse at the theoretically predicted frequency.
+</p>
+<p>
+The article itself is highly recommended to read. The authors utilise nonlinear dynamical systems and try to model a highly complex and intricate circuitry. That intention is highly challenging and their systems approach seems to be unique. At the same time, the model is self-organising, that is it may lack some abstract areas which take the part to make abstract predictions. Also, the choice of the parameter values seems to be somehow not explained enough in this article.
+The tapping experiment seems to be not fully convincing, as they instructed participants to find the beat by tapping along to it. That is they use their attention to find the beat and as no neuronal signals are recorded, it is difficult to say what in the end is the cause of this effect of tapping along a beat that is not present in the actual physical amplitude envelope.
+</p>
+
+<h3 id="a-canonical-model-for-gradient-frequency-neural-networks"><a href="https://www.sciencedirect.com/science/article/pii/S0167278910000187">A Canonical Model for Gradient Frequency Neural Networks</a></h3>
+<blockquote>
+  <p>We derive a canonical model for gradient frequency neural networks capable of processing time-varying external stimuli. First, we employ normal form theory to derive a fully expanded model of neural oscillation. Next, we generalise from the single oscillator model to heterogeneous frequency networks with an external input. Finally, we define the gradient frequency neural network and illustrate nonlinear time-frequency transformation of a time-varying external stimulus.</p>
+</blockquote>
+
+<h4 id="who-is-this-for-4">Who is this for?</h4>
+<ul>
+  <li>Students interested in the (compact) mathematical formulation of the neural oscillation network introduced <a href="#neural-networks-for-beat-perception-in-musical-rhythm">above</a></li>
+<!-- <li>Students that are interested in modelling of</li> -->
+</ul>
+<h4 id="short-summary-4">Short summary</h4>
+<ul>
+  <li>Detailed mathematical derivation of GFNN</li>
+  <li>Comparisons with Wilson-Cowan model</li>
+</ul>
+<h4 id="summary-4">Summary</h4>
+<p>In order to get more of an idea of what is behind the term gradient frequency neural network (GFNN), this article is good to read. Starting with the introduction of single oscillatory dynamics and how it is based a natural frequency. Any frequencies in the stimulus that resonate with the natural frequency will have significant effects on the oscillator's dynamics. Based on this dynamics, the authors employ Poincaré-Dulac Normal Form Theory to transfer it to a canonical form. This form then is expected to be topologically equivalent to the local dynamics of the original neural network.
+<p>The last section, considers a model of nonlinear signal processing based on 1-dimensional networks of nonlinear oscillators. Each oscillator is tuned to different natural frequencies. Such networks are conceptually similar to banks of band-pass filters. The oscillators are organised by their natural frequency, from the lowest to the highest, and stimulated with a time-varying acoustic signal, therefore the name gradient frequency neural oscillator network (GFNN). Here, the authors compare their canonical model of neural oscillators with the well established model of Wilson-Cowan oscillators under the influence of a sinusoidal input where the response amplitude for the Wilson–Cowan model (black line) and the canonical model (gray line) is depicted below. Each network consists of 360 oscillators arrayed along a logarithmic frequency gradient of 6 octaves with 60 oscillators per octave. With a Pearson-correlation-coefficient of $r^2 = 0.946$, the average amplitudes are highly correlated.
+</p>
+<img src="./dat/Large10.svg" alt="Large10" width="550" class="center">
+<p> The article presents quite some equations without offering a illustration of the dynamics itself. In the end, the comparison of their canonical GFNN to Wilson-Cowan GFNN seems a bit short. Also the fact that to that point no proper validation or proof was stated, reduces the articles use to solely provide mathematical equations of how the network is derived.
+</p>
+
+<h3 id="on-synchronizing-movements-to-music"><a href="https://www.sciencedirect.com/science/article/pii/S0167945700000269">On Synchronizing Movements to Music</a></h3>
+  <blockquote>
+  <p>Here, a model of meter perception is proposed in which a musical stimulus provides input to a pattern-forming dynamical system. Under rhythmic stimulation, the system undergoes bifurcations that correspond to the birth of self-sustained oscillations and the formation of temporally structured patterns of oscillations. The resulting patterns dynamically embody the perception of beat and meter, and they are stable in the sense that they can persist in the face of rhythmic conflict. The performance of the model is compared with the results of a recent beat induction study</p>
+  </blockquote>
+  <h4 id="who-is-this-for-5">Who is this for?</h4>
+  <ul>
+    <li>Students who are interested in learning more about metre perception
+  <ul>
+    <li>Musical background is also displayed</li>
+  </ul></li>
+  </ul>
+  <h4 id="short-summary-5">Short summary</h4>
+  <ul>
+    <li>Thorough illustration of basics that led to Large's model</li>
+    <li>Provides a lot of information regarding (temporal) music percept</li>
+    <li>Good to understand, as provided explanations take enough space</li>
+  </ul>
+  <h4 id="summary-5">Summary</h4>
+  <p>
+    How do we synchronise our movements to music? This is the core question Edward W. Large takes into consideration in this article. Combining his thoughts with modelling approaches and empirical findings, he proposes a systems approach to simulate human beat induction or perception of complex auditory stimuli such as music. He then deploys the emerging simulation model in a comparison with results of a tapping task.
+    </p>
+    <p> After an introduction, he starts with illustrating the basic concepts of rhythm, beat and metre stating that "a rhythm is a temporal pattern that can give rise to perceptions of beat and meter. Beat is a psychological pulse that functions as a stable expectation: Once established, it tends to continue "in the mind and musculature of the listener", even when the rhythm stops or temporarily comes into conflict with the pulse series". Then, he addresses the proposed approach of meter perception, treating it as an "active, anticipatory mode of rhythm perception". This approach is based on three key principles, where the first captures the prior definition of beat ("in the mind and musculature of the listener") by stating "perception of musical beat is most appropriately modelled as an active, self-sustained oscillation". The second principle is about the modelling of perception of musical metre as a network of oscillators that are coupled to one another, "whose structure reflects both the temporal structure of the input as well as internal dynamic constraints". The third principle is about the entrainment and (temporal) prediction of a future event. There, he sates: "when driven with a complex external rhythm, the oscillators of the network should entrain to different periodicities within the temporal pattern. The entrainment of oscillators at multiple time scales provides the listener with a framework that shapes expectations about future events". The model of one such oscillator itself is based on a dynamical system in normal form, more precisely it is a self-sustained oscillation described by a normal form for the Hopf bifurcation. In a network of oscillators, an oscillator $i$ can be defined in polar coordinates $(r_\mathrm{i}, \varphi_\mathrm{i})$ as
+
+    $$ \begin{align} \dot{r}_\mathrm{i} &= r_\mathrm{i} (\alpha_\mathrm{i}-r_\mathrm{i}^2) - \sum_{m\neq i} \gamma_\mathrm{mi} r_\mathrm{i} r^2_\mathrm{m} \\ \dot{\varphi}_\mathrm{i} &= \omega_\mathrm{i} \end{align} \label{can_osc}\tag{1}$$
+
+with the first term being internal dynamics with energy parameter $\alpha_\mathrm{i}$ and the system's eigenfrequency $\omega_\mathrm{i}$. The value of the energy parameter determines which behaviour is observed. This can be further examined by looking for the steady states of the system (i.e. $ \dot{r}_\mathrm{i} = 0$). Neglecting the second term of the euqation above, as depicted in the figure below for $\alpha_\mathrm{i}<0$, the system has a stable fixed point with $r_\mathrm{i} = 0$ and behaves as a damped oscillator. For parameter values $\alpha_\mathrm{i} \geq 0$, a stable limit cycle develops with amplitude $r_\mathrm{i} = \pm  \sqrt{\alpha}$ and the system generates a sustained oscillation. Sustained oscillation, again, is the basic model of the internal pulse or musical beat.
+</p>
+    <img src="./dat/Large00.svg" alt="Large00" width="550" class="center">
+<p>The second term is an interaction term. It runs over all oscillators in the network with inhibition parameters $\gamma_\mathrm{mi} \geq 0$. The idea here is that the oscillators compete for activation through mutual inhibition. Oscillators most consonant with the input should tend to deactivate those that do a poorer job of correlating with the incoming rhythm. Thus, in response to a rhythmic input signal, only a few oscillators should remain active – those that best reflect the temporal structure of the rhythm. Aside from an interaction term, Edward W. Large also includes an external input and Gaussian white noise to simulate variability in human behaviour, where both additional terms contribute in both amplitude and phase. Hence, the proposed systems consists of a network of Hopf oscillators, driven by a musical stimulus. Under rhythmic stimulation, this pattern-forming dynamical system undergoes bifurcations that correspond to the birth of self-sustained oscillations and the formation of temporally structured patterns of oscillations, modelling the perception of temporal structure.
+    </p>
+    <p>After considering the choice of parameters of the model and how to parse an audio signal to be an input for the model, the author focuses on an experimental study where the model is applied. In this study, the stimuli consisted of eight ragtime piano pieces. They were presented in four versions each: full pitched, full monotonic, RH pitched, and RH monotonic. That is, 32 separate stimuli were acting as an input. The different versions controlled the amount of syncopation and pitch information available in the input. From the simulation study it is concluded that "network performance deteriorated similarly to human performance as stimulus information degraded. For both the model and for the musicians, increased syncopation was more disruptive to synchronisation than lack of pitch information. Thus, this preliminary test provides initial support for the model, and also suggests promising areas for future research". Furthermore, he states "as people listen to musical rhythms, a stable multi-periodicity pattern arises psychologically, serving as a dynamic embodiment of the temporal structure of the rhythm. In the simplest case, a single periodicity is used to guide tapping along with rhythms. In other situations, more complex metrical patterns may be engaged for synchronisation of intricate movements such as in dance. Ultimately, this form of musical behaviour speaks to the deep interdependence of action and perception."
+    </p>
+    <p> This article is great to read as the density of the content is rather low. Also the author makes an effort to explain and elaborate his thoughts properly. Around beat or metre perception, a lot of information is given making it worthwhile to read or at least look into.
+    </p>
+</p>
+
+
+
+<h3 id="delayed-feedback"><a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007371">Delayed feedback embedded in perception action coordination cycles results in anticipation behaviour during synchronised rhythmic action: A dynamical systems approach</a></h3>
+<blockquote>
+<p>Phenomena like the anticipation tendency can be explained by delay-coupled systems, which may be inherent to the sensorimotor system during perception-action coordination. We hypothesise that the tendency to anticipate is the result of delayed communication between neurons. Here we tested whether a dynamical systems model based on this hypothesis reproduces observed patterns of human synchronisation. We simulated behaviour with a model consisting of an oscillator receiving its own delayed activity as input. Three simulation experiments were conducted using previously-published behavioural data from 1) simple tapping, 2) two-person alternating beat-tapping, and 3) two-person alternating rhythm-clapping in the presence of a range of constant auditory transmission latencies. [...] Overall, our model explains various anticipatory behaviours, and has potential to inform theories of adaptive human synchronisation.</p>
+</blockquote>
+<h4 id="who-is-this-for-7">Who is this for?</h4>
+<ul>
+  <li>Students interested in application of Larges' canonical oscillator
+  <li>Sholars who want to know more about how a simulation study is carried out
+  <li>Students interested in application of dynamical system to neuroscience
+</ul>
+<h4 id="short-summary-7">Short summary</h4>
+<ul>
+<li>Employs delay-coupled systems to examine anticipation tendency in adpative human synchronisation</li>
+<li>Oscillatory dynamics after <a href="#neural-networks-for-beat-perception-in-musical-rhythm"><span>Large</span></a> are considered</li>
+</ul>
+<h4 id="summary-7">Summary</h4>
+<p> The authors start with introducing the term "perception-action coordination" as in walking, talking or dancing, rowing, or music making that results in synchronisation with external information,
+ shared among a group of individuals. This coordination is also termed as sensorimotor synchronisation, as it is considered to depend on communication between the sensory and motor areas of the nervous system. Then, they focus on individuals tap in synchrony with an isochronous stimulus as it is the "simplest form of synchronisation". In dependence on the duration of the inter-onset-intervals (IOIs), humans tend to precede/anticipate or follow the stimuli. If the IOI is between 0.3 and 4.8 s humans tend to tap before the stimulus onset. However, the asynchronies vary widely and can be positive, on average, for an individual tapping with IOIs longer than 2 s. Hence, asynchronies may show a bimodal distribution for IOIs greater than 2 s. When the IOI is greater than 5 s, more taps occur after the stimulus than before the stimulus, suggesting that people are more reactive upon hearing the next beat. Here it is noted that the anticipation tendency not only depends the IOI, but also on the expertise level, complexity of the rhythms and the task requirements. It is then put forward that the anticipation results from the combination of information from different modalities, based on differences in the axonal distances between the hand, the ear and the brain. Different models exist trying to explain this effect, as for example the sensory accumulation model. Yet, these models fail to explain all aspects of this anticipation tendency in tapping such that the authors introduce the "more generalised anticipatory behaviour" model after <a href="https://link.springer.com/chapter/10.1007/978-3-540-45002-3_7">Dubois</a> going beyond the simple anticipatory phenomena. The two main theories as to how anticipatory behaviour arises are the "weak" or "strong anticipation theory". The former proposes that anticipation occurs as the result of inferences produced by internal models. The latter suggests that anticipation results from the homeostatic coupling of information between an organism and its environment. In this article, they chose to explore how the strong anticipation theory could further explain various results in rhythmic coordination in an integrative manner, including anticipatory synchronisation, by conducting computational simulation. The reasons for which seems somehow not fully clear or convincing such that I commented on it in the last paragraph of this summary.
+</p>
+<p> After stating the basics of their approach and its aim, they address how a dynamical system is able to provide information regarding "anticipatory synchronisation". In strong anticipation theory, such synchronisation emerges from the coupling between a response system and a driver system (e.g., stimulus input), where the response system also receives delayed feedback about its own activity. Furthermore, there are parallels between a dynamical system with delayed feedback and the delayed communication between different areas in the sensorimotor system of humans carrying out synchronisation. This is due to the fact that synchronisation requires communication between auditory, premotor and motor brain areas, which involves delayed transmission of neural information. These facts may be captured by coupled dynamical systems with delayed feedback inputs such that a "low-dimensional dynamical systems model could explain anticipation in perception-action coordination". The authors employ the model after <a href="#neural-networks-for-beat-perception-in-musical-rhythm"><span>Edward W. Large</span></a> as a dynamical system to examine whether this prior statement holds true. In contrast to Large and colleagues, they employ the canonical oscillator of Equation \ref{can_osc} without interaction term such that their model setup consists of a single oscillator. Instead of the interaction term, they add delayed recurrent feedback to this single oscillator in order to simulate periodic synchronisation. That is, in addition the input
+
+$$ u= F - \frac{D}{f}z(t-\tau) $$
+
+is added, where $F$ being the external stimuli, and the second term the time delayed feedback of oscillator state $z$. The authors state the computations by this oscillator to b neuroscientifically inspired: It receives an input $z$, thus encoding and perceiving an external stimulus. It also receives its own delayed activity with amplitude $D$ and a delay of $\tau$, simulating the delayed communication in the nervous system between basal-ganglia, cerebellum, premotor cortices, motor cortices, and peripheral muscles at extremities and effectors (e.g., fingers), which are inherent in the perception-action cycles. The value of the variable $f$, is selected to match the frequency $f_{s}$ of a periodic external stimulus. They refer to this model as the Strong Anticipation in Periodic Perception Action (SAPPA) with the code being <a href="https://github.com/iranroman/SAPPA">here</a> and apply it to three simulation experiments. The first simulation experiment concerns the task of tapping to an isochronous stimuli. As shown in the figure below, the model was able to reproduce the mean anticipatory dynamics of musicians and non-musicians tapping with IOI periods between 1 to 3.5 s.
+</p>
+<img src="./dat/Del_feedb19.png" alt="Del" width="400" class="center">
+<p>The black lines origin from experimental recording and the blue and red dots emerge from the simulation model. In the conclusion the authors state that the "model was able to capture the behavioural patterns and effects observed across all studies, [...] making it a tool for the prediction of ecologically-valid anticipation in experiment. Moreover, it is stated that their model "could aid technologies that assist synchronised action-making in teletherapy with transmission latencies (TLs). A better theoretical understanding about how TLs and anticipation interact could lead to a system that dynamically calibrates TLs to help synchronisation between humans interacting over the internet. Additionally, knowing how an individual's neural delays affect synchronisation could serve as a biomarker for rehabilitation in personalised medicine. Finally, our model could be used to improve telecommunications for synchronised action and have implications in other fields like network music performance and robotics."
+</p>
+<p>Overall, the article is well written and good to follow. Interestingly, Edward W. Large declares a competing financial interest as CEO of <a href="https://oscilloscape.com/">Oscilloscape</a>. Regarding their motivation on page 3 to focus on the "strong anticipation theory" after Dubois, I cannot fully understand when looking for explanation approaches for "more generalised anticipatory behaviour" that they somehow are not addressing the idea of predictive processing. This idea is somewhat very well known and widely spread and the core of the whole theory is anticipation or prediction. I am missing the fact that it is not mentioned here. Also, the reasoning that the "weak anticipation theory" which is based on inference of an internal model cannot explain anticipation of systems that do not carry out inference such as laser semiconductors or electronic circuits, seems somehow odd for me. First, the authors are not displaying how such systems anticipate, making it hard for the reader to follow this argument. Second, to compare a purely optical or electrical systems with the human mind seems not that convincing for me. Of course, the brain might have different and more complex underlying mechanisms when it comes to anticipation than a "simple" electrical circuit (which the brain mainly consists of). Therefore, it is rather likely that a theory of human perception or anticipation is not able to predict or explain anticipation of all physical systems that possibly exists. I reckon it is even rather challenging to propose a theory that is able to explain human anticipation in all aspects and modalities such that this whole reasoning for deciding to choose the "strong anticipation theory" as the "better" theory seems not convincing for me. It may have been better to just state that the authors want to investigate this one theory more, that is saying "[our] model is a strong anticipation model because it computes its current state from its physical properties, not through inference" earlier.
+</p>
+
+
+<h3 id="Dyn_mod"><a href="https://www.nature.com/articles/nn.4497.pdf">Dynamic models of large-scale brain activity</a></h3>
+<blockquote>
+<p>Movement, cognition and perception arise from the collective activity of neurons within cortical circuits and across large-scale systems of the brain. [...] Modelling large-scale brain activity with nonlinear dynamical systems theory allows the integration of experimental data from multiple modalities into a common framework that facilitates prediction, testing and possible refutation. This work reviews the core assumptions that underlie this computational approach, the methodological framework that fosters the translation of theory into the laboratory, and the emerging body of supporting evidence. While substantial challenges remain, evidence supports the view that collective, nonlinear dynamics are central to adaptive cortical activity.</p>
+</blockquote>
+<h4 id="who-is-this-for-12">Who is this for?</h4>
+<ul>
+  <li>Students interested in modelling through dynamical systems</li>
+  <li>Students who want to learn more about application of dynamical systems in brain research</li>
+</ul>
+<h4 id="short-summary-a">Short summary</h4>
+<ul>
+  <li>Thorough review on applying dynamical systems to brain research</li>
+  <li>Boxes offering information regarding concepts</li>
+  <li>Rather theoretical (i.e. not many applications displayed)</li>
+</ul>
+<h4 id="summary-a">Summary</h4>
+<p>First, Michael Breakspear addresses the difference between modelling properties of single neurons and a system of neurons through a dynamical systems approach. The former is well established, where back in the 1950s the Nobel-prize winning dynamic model after Hodgkin-Huxley had an essential contribution to illuminating the origin of spikes in neurons. On the other hand, for collective activity of neuronal populations underlying, for example, movement and perception, there is no broadly accepted mathematical theory, yet. For this reason, neuroimaging techniques such as functional magnetic resonance theory (fMRI) or electroencephalography (EEG), reflecting collective activity of thousands of neurons, are traditionally analysed without the use of formal biophysical models. With a short historical review, the author then asks the question wether collective dynamics of neurons are applicable in the same way it is performed in research fields such as magnetism, fluid dynamics or ecology to then formulate mathematical laws to provide a framework for integrating, explaining and predicting empirical data (i.e., through "mean field neural models").
+</p>
+<p> After introducing dynamical systems theory with its typical properties such as stable states, bifurcation or chaotic behaviour, Breakspear returns to the question of how a population of neurons can be modelled. He puts forward that a "brute force method" has been proposed. This method creates a high dimensional system by employing multiple Hodgkin-Huxley models (see article <a href="#NetPyNE"><span>below</span></a>). However, testing predictions of such a model is challenging and historically, neuroscience rather focused on the description emerge from the behaviour of individuals neurons. Mean field approaches are against this trend as it discards all the cell- and circuit-specific information. As an alternative to the brute force methods, the author then puts forward different principles to mathematically describe collective neural behaviour:
+
+<ul>
+  <li>Neural ensemble reduction</li>
+  This approach assumes that on a large spatial scale, the exact states of individual neurons are irrelevant. Further, it draws on the central limit theorem ("diffusion assumption"), stating that "the sum of uncorrelated random processes converges to a Gaussian probability distribution, even if the individual processes are highly non-Gaussian. [...] The entire neural ensemble activity, consisting of highly nonlinear but largely uncorrelated spikes, can be reduced to a standard normal probability distribution possessing simple linear statistics. The activity of such an ensemble of neurons — a patch of cortex (for example <a href="https://en.wikipedia.org/wiki/Cortical_column">cortical columns</a>) — can hence be described by the mean and variance of the firing rate. The mean firing rate reflects the response of the population to its total synaptic inputs and hence drifts up and down in response to increasing or decreasing afferent input. The variance reflects the dispersion (roughness) of all stochastic effects and will change as the variance of the noise changes." Consequently, for the diffusion assmption to hold true, interactions of a neural ensemble need to be much shorter than the spatial length of the spatial system (see Figure below)
+  <div class="imgbox">
+  <!-- <img src="./dat/breakspear01.svg" alt="breakspear01" width="550" class="center"> -->
+    <img class="center-fit" src='./dat/breakspear01.svg' style="margin:6% 4%">
+  </div>
+  such that fluctuations are passive sum of uncorrelated smaller scale events. The equation that can describe the resulting dynamics (i.e. of a linear, normally distributed ensemble) is the Fokker–Planck equation (FPE). This equation stems from theoretical physics, and although this approach is more elegant than the brute force method, it constitutes a partial differential equation, which can be difficult to solve. Breakspear also puts forward, that mounting evidence suggests that spatial and temporal statistics of neural population activity might violate the diffusion assumption (i.e., showing synchronised bursts of activity), such that nonlinear or fractional FPEs need to be considered. Although this is an active area in theoretical physics and has great potential, its application to neuroscience might be still too far fetched.
+
+  <li>Neural mass models</li>
+  As opposed to applying the neural ensemble reduction or the application of the FPE, neural mass models assumes a constant variance, i.e., the ensemble activity is sufficiently close to the mean (mass action approach). This enables to model interacting local populations (e.g., excitatory and inhibitory neurons in different layers of cortex), by a small number of equations, mapping the mean activity of a neural population.
+  One possibility to derive such models is by assuming that the coherence between neurons is so strong that the dynamics of the entire ensemble of neurons resembles that of each single neuron. Consequently, the mean ensemble activity is modelled with the same conductance-based model as used in single-neuron models. Such models often consist of a conductance-based spiking excitatory neuron ensemble coupled to a passive local inhibitory ensemble. Another possibility is to use empirical observations to understand and model the response of the system to its inputs. Examples of such neural mass models are Wilson–Cowan or  <a href="https://doi.org/10.1007/bf00199471">Jansen–Rit</a> models.
+
+  <li>Networks of neural masses</li>
+  After introducing neural mass models, the author demonstrates a possibility to simulate large-scale brain dynamics by coupling different neural mass models into a larger system. Each model describes a local population of interacting neurons. That is, such an "ensemble of an ensemble" treats the cortex as a discrete network of coupled dynamic nodes. The coupling should be based on on anatomical connectivity (connectome), which can be obtained from invasive tracing studies, in the case of animal brain modelling, or MRI-based tractography, in the case of human brain modelling.
+
+  <li>Neural field models</li>
+  An alternative to the coupling of neural mass models to simulate large-scale brain dynamics, is to utilise neural field models, which essentially are nonlinear wave models. Accordingly, the cortex is treated as a smooth sheet that supports waves of propagating activity. The equation itself then is a partial differential equation with temporal and spatial derivatives. This approach contributed to the understanding of large-scale cortical systems to cortical rhythms, transitions to and from sleep, epileptic seizures and evoked potential. Current research also investigates if it is possible to integrate both neural mass and field models into a common framework "aiming to reconcile the apparently contradictory aspects of these large-scale brain models".
+  </ul>
+
+After introducing the different models, Breakspear displays clinical applications where the use of such models has helped to gain insight into different effects. He puts forward that seizures have been modelled as bifurcations in both neural field and mass models, offering insights into the relationship between fast seizure dynamics and the slow metabolic processes to which they are coupled. Such insights offer opportunities for therapeutic interventions, including seizure control using closed loop feedback to reduce divergence from healthy, resting-state attractors. He further points out that the application of neural mass and field models "to clinical neurophysiology data represents a fertile area, with emerging applications to many other neurological disorders, from Parkinson's disease to dementia".
+<p></p>
+Breakspear concludes that "models of large-scale neuronal dynamics are unique in their capacity to explain, predict and integrate neuronal activity at the macroscopic scale of perception, behaviour and functional imaging data". Conceptual assumptions of these models are increasingly supported by analyses of empirical data. Importantly, the resulting activity of a dynamical system is not necessarily the trivial sum of its components (dynamic interactions at one scale may yield unexpected activity at a coarser scale). However, further research is needed to reliable model brain dynamics. One starting point is to consider where the assumptions on which the models operate start to break down. His outlook is that "neuroscience will eventually be anchored by a comprehensive nonlinear model that accommodates cognition and imaging data in a single framework". To achieve this, the believes that multidisciplinary teams (with training in mathematics and physics) are necessary and that it "will require the increased use of computational models in the design of experiments and in the analysis of the ensuing data".
+<p></p>
+This article is highly recommended to read as it offers a lot of basic knowledge. However, the level of writing is quite abstract and one can easily feel disconnected.
+</p>
+<p></p>
+<p></p>
+
+
+<h3 id="NetPyNE"><a href="https://elifesciences.org/articles/44494">NetPyNE, a Tool for Data-Driven Multi-scale Modeling of Brain Circuits</a></h3>
+<blockquote>
+<p>NetPyNE (Networks using Python and NEURON) is a python package to facilitate the development, parallel simulation and analysis of biological neuronal networks using the NEURON simulator. Although NEURON already enables multi-scale simulation ranging from the molecular to the network level, NEURON for networks, often requiring parallel simulations, requires substantial programming. NetPyNE greatly facilitates the development and parallel simulation of biological neuronal networks in NEURON for students and experimentalists. NetPyNE is also intended for experienced modellers, providing powerful features to incorporate complex anatomical and physiological data into models.</p>
+</blockquote>
+<h4 id="who-is-this-for-12">Who is this for?</h4>
+<ul>
+  <li>Students who want to know more about neuron modelling</li>
+  <li>Students wanting to know more about data driven multi-scale models</li>
+</ul>
+<h4 id="short-summary-a">Short summary</h4>
+<ul>
+  <li>Introduces NetPyNE</li>
+  <li>Offers information of how to build a NEURON model</li>
+  <li>Also mentions other tools which are based on NEURON</li>
+</ul>
+<h4 id="summary-a">Summary</h4>
+<p> This article introduces NetPynE, a tool that models neural networks on a lower level than the approaches considered before (phrased as "brute force methoed" in the article before). Based on biophysical properties of one single neuron, detailed multi-scale models are created. Multi-scale means that the level of consideration is flexible reaching from a single neuron up to large population of networks. As can be seen in the image below, by building a network model, that is a model operation on a more abstract level than simulating a single neuron's activity, a hierarchy of different levels of consideration is created.
+<div class="imgbox">
+  <img class="center-fit" src='./dat/NetPynE.jpg' style="margin:6% 4%">
+</div>
+NetPynE itself can be seen as a tool to facilitate network modelling in <a href="https://neuron.yale.edu/neuron/">NEURON</a>. NEURON, again, is the leading simulator in the domain of multi-scale neuronal modelling. However, building data-driven large-scale networks and running parallel simulations in NEURON is technically challenging. NetPyNE on the other hand, aims to shift the time effort and focus of users from low-level coding to designing a model that matches the bio logical details at the chosen scales. After defining high-level specifications, involving the definition of all parameters required to build the network, from population sizes to cell properties to connectivity rules, and the simulation options, including duration, integration step, variables to record et cetera, NetPyNE builds a NEURON model ready for simulation.
+</p>
+<p>The underlying dynamics of such a NEURON model can be described through a choice of different non-linear neuron models such as for example the Hodgkin-Huxley model or the <a href="https://www.izhikevich.org/publications/spikes.htm">Izhikevich</a> model, simplifying the former. These models are then interconnected through coupling functions. To demonstrate such a model shortly, the Izhikevich model consists of two ordinary differential equations and it can, among others, simulate the generation of spiking neuron pattern formations and their propagation characteristics which can be seen in the two animations below.
+<div class="row">
+  <div class="column">
+    <img src="./dat/NetPynE_Izhikevich_1_.gif" alt="Izhikevich 1" width="300" class="center">
+  </div>
+  <div class="column">
+    <img src="./dat/NetPynE_Izhikevich_2_.gif" alt="Izhikevich 2" width="300" class="center">
+  </div>
+</div>
+Both animations emerge from a neural network where its simulation code is taken from <a href="http://www.physics.usyd.edu.au/teach_res/mp/ns/doc/nsIzhikevich3.htm">here</a>. Neurons are uniformly placed in an 100x100 grid and are coupled through a Mexican-Hat function. The left animation shows the time evolution of the membrane potential and the right one shows only the (high-frequency) spiking of the neurons. In this (rather simple) simulation, 18 parameters need to be determined, showing the downside of this simple model – the difficulty to know what parameters to use. Hence, to use NetPyNE or NEURON it is important to set proper parameters in order to get valuable results as in a large scale network such parameter choice will have a great effect on the performance and usability of the simulation.
+</p>
+<p> Provided the respective model parameters are chosen properly, NetPyNE can calculate the chemical and electrical changes that take place in neurons and reproduce the patterns of activity seen in experiments which can provide insights into how the brain itself work. Besides that, it also offers to integrate experimental data spanning multiple scales, from interactions between individual molecules to coordinated waves of electrical activity that spread across the entire brain surface. Aside from NetPyNE, other tools exist employing NEURON as the core to build a simulation model. On such tool is <a href="http://www.scholarpedia.org/article/NEST_(NEural_Simulation_Tool)">NEST</a>, suitable "for models that focus on the dynamics, size, and structure of neural systems rather than on the detailed morphological and biophysical properties of individual neurons", that is to say, it is designed for simulating large heterogeneous networks. Another tool is <a href="https://lfpy.readthedocs.io/en/latest/">LFPy</a>. LFPy is a Python package for the calculation of extracellular potentials emerging from neuron models and recurrent networks of neurons. That is, through computing theoretical dipoles, different signals can be predicted with LFPy, including EEG, MEG and LFP signals. This is shown in this <a href="https://www.frontiersin.org/articles/10.3389/fninf.2018.00092/pdf">article</a> were also the graphic below is from. This graphic depicts the different extracellular potentials arising from activity in the neuron model and which LFPy is able to predict.
+<div class="imgbox">
+    <img class="center-fit" src='./dat/LFPy_.png'>
+</div>
+Especially worth mentioning is the fact that it is co-developed by <a href="http://cinpla.org/">CINPLA</a> a Centre for Integrative Neuroplasticity at the University of Oslo.
+</p>
+
+
+
+<h2 id="application-prediction-mechanisms">Transfer to Application</h2>
+<p>Besides being a Professor of Psychological Sciences and Professor of Physics, Edward W. Large is also the founder of a company called <a href="https://oscilloscape.com/">Oscilloscape</a> where he offers different products which apply his research findings. One such product is "Synchrony" claimed to be "the only LED controller that uses a state-of-the-art neural network that synchronises its internal rhythms to the rhythms of music so that it can hear music the way people do. In a way, it enables you to visualise what is happening in your brain when you listen to music." In a similar vain in this chapter, possible applications of the simulation models introduced above are displayed. Here, aside of the article presentation, a comment on how to employ possible oscillatory based temporal prediction models is added.</p>
+
+
+<h3 id="swarmalators"><a href="https://www.nature.com/articles/s41467-017-01190-3.pdf">Oscillators that Sync and Swarm</a></h3>
+<blockquote>
+<p>Here we explore systems in which both synchronisation and swarming occur together. Specifically, we consider oscillators whose phase dynamics and spatial dynamics are coupled. We call them swarmalators, to highlight their dual character. A case study of a generalised <a href="https://en.wikipedia.org/wiki/Kuramoto_model">Kuramoto model</a> predicts five collective states as possible long-term modes of organisation. These states may be observable in groups of sperm, Japanese tree frogs, colloidal suspensions of magnetic particles, and other biological and physical systems in which self-assembly and synchronisation interact.</p>
+</blockquote>
+<h4 id="who-is-this-for-8">Who is this for?</h4>
+<ul>
+<li>Students wanting to learn more about modelling using nonlinear dynamics</li>
+<li>Students looking for inspiration of a model design or way of proceeding</li>
+</ul>
+<h4 id="short-summary-8">Short summary</h4>
+<ul>
+  <li>Proposes a swarm and syncronisation model named swarmalator</li>
+  <li>Employs nonlinear dynamics and examines the states of the resulting system</li>
+  <li>Conducts simulation studies</li>
+</ul>
+<h4 id="summary-8">Summary</h4>
+<p>The authors consider a simple generic model of oscillators with coupled phase and spatial dynamics which they term swarmalators. Hereby, they propose a new class of models to study the collective dynamics of moving units, each having a phase degree of freedom as well as a position vector. By doing so, first they reason that by displaying possible causes and their motivation. According to the authors, studies regarding swarming and synchronisation have much in common as they "both involve large, self-organising groups of individuals interacting according to simple rules", yet remained largely disconnected. Studies of swarms focus on how animals move, while neglecting the dynamics of their internal states. Studies of synchronisation do the opposite by focusing on oscillators' internal dynamics, not on their motion. Then they demonstrate a possible instance of a swarmalator system, namely a population of myxobacteria. The movements of these bacteria in space are thought to be influenced by an internal, biochemical degree of freedom, which appears to vary cyclically. Experimental evidence suggests that the evolution of this phase is influenced by the spatial density of neighbouring cells. Thus, there appears to be a bi-directional coupling between spatial and phase dynamics. A more visual introduction to the swarmalators can be found here.
+</p>
+<!-- <iframe width="560" height="515" src="https://www.youtube.com/embed/ic4zEgVMSsA" frameborder="0" class="center" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+<div class="container">
+<iframe src="https://www.youtube.com/embed/ic4zEgVMSsA" frameborder="0" class="video" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<p>The whole concept of swarmalators is a bottom up approach. That is to say, they propose a simple model which can be used to study its behaviour analytically, hoping to "draw attention to this class of problems, and stimulate the discovery and characterisation of natural and technological systems of swarmalators". After defining some parameters, the state equations of one swarmalator can be written as a system of ordinary differential equations by
+
+$$ \begin{align} \dot{x}_\mathrm{i} &= v_\mathrm{i} + \frac{1}{N} \left( \sum^N_{j\neq i} \frac{x_\mathrm{j}-x_\mathrm{i}}{|x_\mathrm{j}-x_\mathrm{i}|} \left( 1+J \mathrm{cos}(\theta_\mathrm{j} - \theta_\mathrm{i}) \right) - \frac{x_\mathrm{j}-x_\mathrm{i}}{|x_\mathrm{j}-x_\mathrm{i}|^2} \right)\,, \\ \dot{\theta}_\mathrm{i} &= \omega_\mathrm{i} + \frac{K}{N} \sum^N_{j \neq i} \frac{\mathrm{sin}(\theta_\mathrm{j}-\theta_\mathrm{i})}{|x_\mathrm{j}-x_\mathrm{i}|} \,, \end{align}$$
+
+for $i = 1, \dots, N$ where $N$ is the population size, $x_\mathrm{i} = (\tilde{x}_\mathrm{i}, \tilde{y}_\mathrm{i}) \in \mathbb{R}^2$ is the position of the $i$-th swarmalator with phase $\theta_\mathrm{i}$, natural frequency $\omega_\mathrm{i}$ and self-propulsion velocity $v_\mathrm{i}$. The second term of the spatial states (first equation) includes the phase difference between the respective swarmalator and all others. Besides that, the first term in the summation represents the spatial attraction and the second, repulsion between swarmalators. The phase interaction itself is captured in the second equation. The parameters already implemented in the equations above have been chosen such that the swarmalators have similarity to the Kuramoto model. Assuming the same natural frequency $\omega_\mathrm{i}$ and velocity $v_\mathrm{i}$ for all present swarmalators, two parameters $J$ and $K$ are left. The parameter $K$ measures the strength of the phase coupling and the parameter $J>0$ measures the extent to which phase similarity influences spatial attraction and repulsion, respectively. Depending on the choice of these two parameters, different stable or unstable states can emerge. One such state examined with a systems' approach in this <a href="https://journals.aps.org/pre/abstract/10.1103/PhysRevE.98.022203">publication</a> are ring states. As can be seen in this animation
+<img src="./dat/as_.gif" alt="Animation of Swarmalators" class="center">
+<!-- <img src="https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-017-01190-3/MediaObjects/41467_2017_1190_MOESM7_ESM.gif" alt="Animation of Swarmalators" class="center" loop=true> -->
+where swarmalators are coloured according to their phase, a bifurcation of an annulus into a splintered phase wave can occur. That is to say, static phase wave splinters into disconnected clusters of distinct phases. In this animation $N = 1000$ swarmalators for $T = 1000$ time units and stepsize $dt = 0.1$ were simulated with $(J, K) = (1, −0.1)$. The initial conditions of the swarmalators are uniformly at random in a box, while their phases were drawn from $\left[−\pi, \pi\right]$. The choice of $K<0$ causes the system to be non-stationary state. Regarding to the authors, it is unclear what determines the number of clusters. Within each cluster, the swarmalators "quiver" by executing small amplitude oscillations in both position and phase about their mean values.
+</p>
+<p>
+By varying the given parameters, rich spatiotemporal patterns emerge which the authors explore analytically and numerically. As an outlook, they highlight that "future work is to more fully explore the interplay among aggregation, alignment, and synchronisation — or put another way, to explore the collective behaviour of particles with a position $x$, an orientation $\beta$, and an internal phase $\theta$." In this article, they studied a subset of these three effects, namely aggregation and synchronisation. I think the concept of "swarmalators" seems very interesting from a theoretical point of view. The setup seems pretty simple and good to follow. Also, a mathematical foundation is given in the appendix as well as the <a href="https://github.com/Khev/swarmalators">source code</a>. Yet, their reasoning as to why such a system setup seems plausible is not fully convincing. Their model seems rather specific, and rather remote to any real situation. Given time, this may change. Regarding the application of oscillatory modelled temporal predictions, it may be also possible to follow such a bottom up approach by proposing a hybrid model which address a not so well examined problem.
+</p>
+
+
+<h3 id="fireflies"><a href="https://ieeexplore.ieee.org/document/6981832">Decentralized Harmonic synchronisation in Mobile Music Systems</a></h3>
+<blockquote>
+<p>Our focus of research is on collaborative active music. [...] A system for decentralised synchronisation of musical agents is presented, inspired by Mirollo and Strogatz' pulse coupled oscillator model of the synchronous flashing of certain species of firefly. While most previous work on pulse-coupled oscillators assume fixed and (close to) equal oscillator frequencies, he presented system tackles the challenge of different starting frequencies.</p>
+</blockquote>
+<h4 id="who-is-this-for-9">Who is this for?</h4>
+<ul>
+  <li>Students interested in (active) music technologies</li>
+</ul>
+<h4 id="short-summary-9">Short summary</h4>
+<ul>
+  <li>Mimics synchronisation mechanisms found in fireflies</li>
+  <li>Uses static equations to model such</li>
+  <li>Applies model on mobile devices</li>
+</ul>
+<h4 id="summary-9">Summary</h4>
+<p>The model at hand is inspired by synchronisation mechanisms of fireflies. In the same way as fireflies, autonomous agents synchronise with each other. More precisely, each agent omits a tone at a variable frequency and is also able to receive the tones from other agents. To synchronise with each other, either the current phase between two tones is reset when a tone from another agent is received or the actual frequency is changed by a certain value. A combination of these two principles is also implemented. By doing so, ideally the system converges to a state where all agents fire at a common underlying pulse (harmonic frequencies), which the authors term "harmonic synchrony". The authors implemented this model in Max, PureData and Matlab, and also used the concept with mobile devices as agents.</p>
+<p>A possible application of this network of agents is in interactive music systems, specifically on mobile technologies as "music technologies challenge the traditional distinction between musical instruments (used by performers) and music playback devices (used by listeners). Active technologies provide users with a higher degree of control than traditional music playback devices, yet not requiring the expertise of professional performers on musical instruments." Further, the authors focus on collaborative active music, "meaning a group of people who are using their mobile phones to interact with music at a level where the degree of control is higher than traditional media players".
+</p>
+<p>Each agent consists of a set of static equations. That is, no dynamics are incorporated. Hence, to possibly improve the model alongside the frequency adaption mechanisms, oscillatory dynamics could be added. Each agent then oscillates according to neuronal dynamics and fires when a certain threshold is reached.</p>
+
+<h2 id="Ackno">Acknowledgment</h2>
+<p> At this point, I want to thank Jørgen Nordmoen for providing the basic code for this page.</p>
+</body>
+</html>
